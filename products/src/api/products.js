@@ -10,7 +10,7 @@ const UserAuth = require("./middlewares/auth");
 module.exports = (app, channel) => {
   const service = new ProductService();
 
-  app.post("/product/create", async (req, res, next) => {
+  app.post("/products/create", async (req, res, next) => {
     const { name, desc, type, unit, price, available, suplier, banner } =
       req.body;
     // validation
@@ -27,7 +27,7 @@ module.exports = (app, channel) => {
     return res.json(data);
   });
 
-  app.get("/category/:type", async (req, res, next) => {
+  app.get("/products/category/:type", async (req, res, next) => {
     const type = req.params.type;
 
     try {
@@ -38,7 +38,7 @@ module.exports = (app, channel) => {
     }
   });
 
-  app.get("/:id", async (req, res, next) => {
+  app.get("/products/get/:id", async (req, res, next) => {
     const productId = req.params.id;
 
     try {
@@ -49,13 +49,13 @@ module.exports = (app, channel) => {
     }
   });
 
-  app.post("/ids", async (req, res, next) => {
+  app.post("/products/ids", async (req, res, next) => {
     const { ids } = req.body;
     const products = await service.GetSelectedProducts(ids);
     return res.status(200).json(products);
   });
 
-  app.put("/wishlist", UserAuth, async (req, res, next) => {
+  app.put("/products/wishlist", UserAuth, async (req, res, next) => {
     const { _id } = req.user;
 
     const { data } = await service.GetProductPayload(
@@ -70,7 +70,7 @@ module.exports = (app, channel) => {
     res.status(200).json(data.data.product);
   });
 
-  app.delete("/wishlist/:id", UserAuth, async (req, res, next) => {
+  app.delete("/products/wishlist/:id", UserAuth, async (req, res, next) => {
     const { _id } = req.user;
     const productId = req.params.id;
 
@@ -85,7 +85,7 @@ module.exports = (app, channel) => {
     res.status(200).json(data.data.product);
   });
 
-  app.put("/cart", UserAuth, async (req, res, next) => {
+  app.put("/products/cart", UserAuth, async (req, res, next) => {
     const { _id } = req.user;
 
     const { data } = await service.GetProductPayload(
@@ -105,7 +105,7 @@ module.exports = (app, channel) => {
     res.status(200).json(response);
   });
 
-  app.delete("/cart/:id", UserAuth, async (req, res, next) => {
+  app.delete("/products/cart/:id", UserAuth, async (req, res, next) => {
     const { _id } = req.user;
     const productId = req.params.id;
 
@@ -126,14 +126,14 @@ module.exports = (app, channel) => {
     res.status(200).json(response);
   });
 
-  app.get("/whoami", (req, res, next) => {
+  app.get("/products/whoami", (req, res, next) => {
     return res
       .status(200)
       .json({ msg: "/ or /products : I am products Service" });
   });
 
   //get Top products and category
-  app.get("/", async (req, res, next) => {
+  app.get("/products/view", async (req, res, next) => {
     //check validation
     try {
       const { data } = await service.GetProducts();

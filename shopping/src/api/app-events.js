@@ -4,7 +4,7 @@ module.exports = (app) => {
     
     const service = new ShoppingService();
 
-    app.use('/app-events',async (req,res,next) => {
+    app.use('/shopping/app-events',async (req,res,next) => {
 
         const { payload } = req.body;
         console.log("============= Shopping ================");

@@ -10,7 +10,7 @@ module.exports = (app, channel) => {
 
     SubscribeMessage(channel, service)
 
-    app.post('/order',UserAuth, async (req,res,next) => {
+    app.post('/shopping/order',UserAuth, async (req,res,next) => {
 
         const { _id } = req.user;
         const { txnNumber } = req.body;
@@ -26,7 +26,7 @@ module.exports = (app, channel) => {
 
     });
 
-    app.get('/orders',UserAuth, async (req,res,next) => {
+    app.get('/shopping/orders',UserAuth, async (req,res,next) => {
 
         const { _id } = req.user;
 
@@ -36,7 +36,7 @@ module.exports = (app, channel) => {
 
     });
 
-    app.put('/cart',UserAuth, async (req,res,next) => {
+    app.put('/shopping/cart',UserAuth, async (req,res,next) => {
 
         const { _id } = req.user;
 
@@ -46,7 +46,7 @@ module.exports = (app, channel) => {
 
     });
 
-    app.delete('/cart/:id',UserAuth, async (req,res,next) => {
+    app.delete('/shopping/cart/:id',UserAuth, async (req,res,next) => {
 
         const { _id } = req.user;
 
@@ -57,7 +57,7 @@ module.exports = (app, channel) => {
 
     });
     
-    app.get('/cart', UserAuth, async (req,res,next) => {
+    app.get('/shopping/cart', UserAuth, async (req,res,next) => {
 
         const { _id } = req.user;
         
@@ -66,7 +66,7 @@ module.exports = (app, channel) => {
         return res.status(200).json(data);
     });
 
-    app.get('/whoami', (req,res,next) => {
+    app.get('/shopping/whoami', (req,res,next) => {
         return res.status(200).json({msg: '/shoping : I am Shopping Service'})
     })
  
