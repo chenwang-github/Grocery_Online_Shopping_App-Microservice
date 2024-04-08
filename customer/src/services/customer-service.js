@@ -1,6 +1,6 @@
 const { CustomerRepository } = require("../database");
 const { FormateData, GeneratePassword, GenerateSalt, GenerateSignature, ValidatePassword } = require('../utils');
-
+const {APIError} = require('../utils/app-errors');
 // All Business logic will be here
 class CustomerService {
 
@@ -11,81 +11,127 @@ class CustomerService {
     async SignIn(userInputs){
 
         const { email, password } = userInputs;
-        
-        const existingCustomer = await this.repository.FindCustomer({ email});
+        try{
+            const existingCustomer = await this.repository.FindCustomer({ email});
 
-        if(existingCustomer){
-            
-            const validPassword = await ValidatePassword(password, existingCustomer.password, existingCustomer.salt);
-            if(validPassword){
-                const token = await GenerateSignature({ email: existingCustomer.email, _id: existingCustomer._id});
-                return FormateData({id: existingCustomer._id, token });
+            if(existingCustomer){
+                
+                const validPassword = await ValidatePassword(password, existingCustomer.password, existingCustomer.salt);
+                if(validPassword){
+                    const token = await GenerateSignature({ email: existingCustomer.email, _id: existingCustomer._id});
+                    return FormateData({id: existingCustomer._id, token });
+                }
             }
-        }
 
-        return FormateData(null);
+            return FormateData(null);
+        }catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+        
     }
 
     async SignUp(userInputs){
         
         const { email, password, phone } = userInputs;
+        try{
+            // create salt
+            let salt = await GenerateSalt();
+            
+            let userPassword = await GeneratePassword(password, salt);
+            
+            const existingCustomer = await this.repository.CreateCustomer({ email, password: userPassword, phone, salt});
+            
+            const token = await GenerateSignature({ email: email, _id: existingCustomer._id});
+            return FormateData({id: existingCustomer._id, token });
+        }catch(err){
+            throw new APIError('Data Not Found',err);
+        }
         
-        // create salt
-        let salt = await GenerateSalt();
-        
-        let userPassword = await GeneratePassword(password, salt);
-        
-        const existingCustomer = await this.repository.CreateCustomer({ email, password: userPassword, phone, salt});
-        
-        const token = await GenerateSignature({ email: email, _id: existingCustomer._id});
-        return FormateData({id: existingCustomer._id, token });
 
     }
 
     async AddNewAddress(_id,userInputs){
         
         const { street, postalCode, city,country} = userInputs;
-    
-        const addressResult = await this.repository.CreateAddress({ _id, street, postalCode, city,country})
 
-        return FormateData(addressResult);
+        try{
+            const addressResult = await this.repository.CreateAddress({ _id, street, postalCode, city,country})
+
+            return FormateData(addressResult);
+        }catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+    
+        
     }
 
     async GetProfile(id){
-
-        const existingCustomer = await this.repository.FindCustomerById({id});
-        return FormateData(existingCustomer);
+        try{
+            const existingCustomer = await this.repository.FindCustomerById({id});
+            return FormateData(existingCustomer);
+        }catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+        
     }
 
     async GetShopingDetails(id){
+        try{
+            const existingCustomer = await this.repository.FindCustomerById({id});
 
-        const existingCustomer = await this.repository.FindCustomerById({id});
-
-        if(existingCustomer){
-            // const orders = await this.shopingRepository.Orders(id);
-           return FormateData(existingCustomer);
-        }       
-        return FormateData({ msg: 'Error'});
+            if(existingCustomer){
+                // const orders = await this.shopingRepository.Orders(id);
+            return FormateData(existingCustomer);
+            }       
+            return FormateData({ msg: 'Error'});
+        }catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+        
     }
 
     async GetWishList(customerId){
-        const wishListItems = await this.repository.Wishlist(customerId);
-        return FormateData(wishListItems);
+        try{
+            const wishListItems = await this.repository.Wishlist(customerId);
+            return FormateData(wishListItems);
+        }
+        catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+        
     }
 
     async AddToWishlist(customerId, product){
-         const wishlistResult = await this.repository.AddWishlistItem(customerId, product);        
-        return FormateData(wishlistResult);
+        try{
+            const wishlistResult = await this.repository.AddWishlistItem(customerId, product);        
+            return FormateData(wishlistResult);
+        }
+        catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+         
     }
 
     async ManageCart(customerId, product, qty, isRemove){
-        const cartResult = await this.repository.AddCartItem(customerId, product, qty, isRemove);        
-       return FormateData(cartResult);
+        try{
+            const cartResult = await this.repository.AddCartItem(customerId, product, qty, isRemove);        
+            return FormateData(cartResult);
+        }
+        catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+        
     }
 
     async ManageOrder(customerId, order){
-        const orderResult = await this.repository.AddOrderToProfile(customerId, order);
-        return FormateData(orderResult);
+        try{
+            const orderResult = await this.repository.AddOrderToProfile(customerId, order);
+            return FormateData(orderResult);
+        }
+        catch(err){
+            throw new APIError('Data Not Found',err);
+        }
+        
     }
 
     async SubscribeEvents(payload){

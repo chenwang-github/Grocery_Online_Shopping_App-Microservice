@@ -8,7 +8,7 @@ module.exports = (app, channel) => {
     
     const service = new ShoppingService();
 
-    SubscribeMessage(channel, service)
+    // SubscribeMessage(channel, service)
 
     app.post('/shopping/order',UserAuth, async (req,res,next) => {
 
@@ -20,7 +20,13 @@ module.exports = (app, channel) => {
         const payload = await service.GetOrderPayload(_id, data, 'CREATE_ORDER')
 
         // PublishCustomerEvent(payload)
-        PublishMessage(channel,CUSTOMER_SERVICE, JSON.stringify(payload))
+        // PublishMessage(channel,CUSTOMER_SERVICE, JSON.stringify(payload))
+
+        const customerResponse = await axios.post('http://localhost:8001/customer/create-order', payload,{
+            headers: {
+                'Authorization': ` ${req.headers.authorization}`
+            }
+    });
 
         res.status(200).json(data);
 
@@ -69,5 +75,25 @@ module.exports = (app, channel) => {
     app.get('/shopping/whoami', (req,res,next) => {
         return res.status(200).json({msg: '/shoping : I am Shopping Service'})
     })
+
+    app.post('/shopping/add-to-cart', UserAuth, async (req,res,next) => {
+        const { _id } = req.user;
+
+        const { userId, product, qty } = req.body.data;
+
+        const { data } = await service.ManageCart(userId,product, qty, false);
+
+        return res.json(data);
+    });
+
+    app.post('/shopping/remove-from-cart', UserAuth, async (req,res,next) => {
+        const { _id } = req.user;
+
+        const { userId, product, qty } = req.body.data;
+
+        const { data } = await service.ManageCart(userId,product, qty, true);
+
+        return res.json(data);
+    });
  
 }

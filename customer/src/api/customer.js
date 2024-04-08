@@ -8,7 +8,7 @@ module.exports = (app, channel) => {
     const service = new CustomerService();
 
     // To listen
-    SubscribeMessage(channel, service);
+    // SubscribeMessage(channel, service);
 
     app.post('/customer/signup', async (req,res,next) => {
         const { email, password, phone } = req.body;
@@ -65,4 +65,47 @@ module.exports = (app, channel) => {
     app.get('/customer/whoami', (req,res,next) => {
         return res.status(200).json({msg: '/customer : I am Customer Service'})
     })
+
+    app.post('/customer/add-to-cart', UserAuth, async (req,res,next) => {
+        const { _id } = req.user;
+
+        const { userId, product, order, qty } = req.body.data;
+
+        const { data } = await service.ManageCart(_id,product, qty, false);
+
+        return res.json(data);
+    });
+
+    app.post('/customer/remove-from-cart', UserAuth, async (req,res,next) => {
+        const { _id } = req.user;
+
+        const { userId, product, order, qty } = req.body.data;
+
+        const { data } = await service.ManageCart(_id,product, qty, true);
+
+        return res.json(data);
+    });
+
+    app.post('/customer/add-to-wishlist', UserAuth, async (req,res,next) => {
+        const { _id } = req.user;
+
+        const { userId, product, order, qty } = req.body.data;
+
+        const { data } = await service.AddToWishlist(userId,product);
+
+        return res.json(data);
+    });
+
+    app.post('/customer/create-order', UserAuth, async (req,res,next) => {
+        const { _id } = req.user;
+
+        const { userId, product, order, qty } = req.body.data;
+
+        const { data } = await service.ManageOrder(userId,order);
+
+        return res.json(data);
+    });
+
+
+
 }

@@ -12,8 +12,8 @@ module.exports = async (app) => {
     //api
     // appEvents(app);
 
-    const channel = await CreateChannel()
-
+    // const channel = await CreateChannel()
+    const channel = null;
     
     customer(app, channel);
     // error handling

@@ -9,9 +9,9 @@ services:
       - "8002:8002"
     restart: always
 
-    volumes:
-      - .:/app
-      - /app/products/node_modules
+    # volumes:
+      # - .:/app
+      # - /app/products/node_modules
 
     env_file:
       - ./products/.env.dev
@@ -24,9 +24,9 @@ services:
       - "8003:8003"
     restart: always
 
-    volumes:
-      - .:/app
-      - /app/shopping/node_modules
+    # volumes:
+      # - .:/app
+      # - /app/shopping/node_modules
     env_file:
       - ./shopping/.env.dev
   customer:
@@ -38,9 +38,9 @@ services:
       - "8001:8001"
     restart: always
 
-    volumes:
-      - .:/app/
-      - /app/customer/node_modules
+    # volumes:
+      # - .:/app/
+      # - /app/customer/node_modules
     env_file:
       - ./customer/.env.dev
   nginx-proxy:
