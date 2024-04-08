@@ -12,8 +12,14 @@ module.exports = (app, channel) => {
 
     app.post('/customer/signup', async (req,res,next) => {
         const { email, password, phone } = req.body;
-        const { data } = await service.SignUp({ email, password, phone}); 
-        res.json(data);
+
+        try{
+            const { data } = await service.SignUp({ email, password, phone}); 
+            res.json(data);
+        }catch(err){
+            res.json({ error: err.message });
+        }
+        
 
     });
 
@@ -21,9 +27,16 @@ module.exports = (app, channel) => {
         
         const { email, password } = req.body;
 
-        const { data } = await service.SignIn({ email, password});
+        try{
+            const { data } = await service.SignIn({ email, password});
 
-        res.json(data);
+            res.json(data);
+        }
+        catch(err){
+            res.json({ error: err.message });
+        }
+
+        
 
     });
 
@@ -31,12 +44,16 @@ module.exports = (app, channel) => {
         
         const { _id } = req.user;
 
-
         const { street, postalCode, city,country } = req.body;
 
-        const { data } = await service.AddNewAddress( _id ,{ street, postalCode, city,country});
+        try{
+            const { data } = await service.AddNewAddress( _id ,{ street, postalCode, city,country});
 
-        res.json(data);
+            res.json(data);
+        }
+        catch(err){
+            res.json({ error: err.message });
+        }
 
     });
      
@@ -44,25 +61,50 @@ module.exports = (app, channel) => {
     app.get('/customer/profile', UserAuth ,async (req,res,next) => {
 
         const { _id } = req.user;
-        const { data } = await service.GetProfile({ _id });
-        res.json(data);
+
+        try{
+            const { data } = await service.GetProfile({ _id });
+            res.json(data);
+        }catch(err){
+            res.json({ error: err.message });
+        }
+        
     });
      
 
     app.get('/customer/shoping-details', UserAuth, async (req,res,next) => {
         const { _id } = req.user;
-       const { data } = await service.GetShopingDetails(_id);
+        try{
+            const { data } = await service.GetShopingDetails(_id);
 
-       return res.json(data);
+            return res.json(data);
+        }
+        catch(err){
+            res.json({ error: err.message });
+        }
+       
     });
     
     app.get('/customer/wishlist', UserAuth, async (req,res,next) => {
         const { _id } = req.user;
-        const { data } = await service.GetWishList( _id);
-        return res.status(200).json(data);
+
+        try{
+            const { data } = await service.GetWishList( _id);
+            return res.status(200).json(data);
+        }
+        catch(err){
+            res.json({ error: err.message });
+        }
+        
     });
 
     app.get('/customer/whoami', (req,res,next) => {
-        return res.status(200).json({msg: '/customer : I am Customer Service'})
+        try{
+            return res.status(200).json({msg: '/customer : I am Customer Service'})
+
+        }
+        catch(err){
+            res.json({ error: err.message });
+        }
     })
 }
