@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: products-env
+data:
+  APP_SECRET: 'jg_youtube_tutorial'
+  MONGODB_URI: 'mongodb://34.30.76.14/msytt_product'
+  MSG_QUEUE_URL: 'amqp://34.30.76.14:5672'
+  EXCHANGE_NAME: 'ONLINE_STORE'
+  PORT: '8002'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: products
+  template:
+    metadata:
+      labels:
+        app: products
+    spec:
+      containers:
+      - name: products
+        image: bs6bs6/products-microservice:v1.2
+        ports:
+        - containerPort: 8002
+        envFrom:
+        - configMapRef:
+            name: products-env
+        
